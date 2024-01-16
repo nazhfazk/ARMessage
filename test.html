@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR Message Board</title>
+    <script src='https://aframe.io/releases/0.9.2/aframe.min.js'></script>
+    <script src="https://raw.githack.com/jeromeetienne/AR.js/master/aframe/build/aframe-ar.min.js"></script>
+    <script src="https://raw.githack.com/donmccurdy/aframe-extras/master/dist/aframe-extras.loaders.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const messageBox = document.getElementById('messageBox');
+
+            // Event listener for sending the message on Enter key press
+            messageBox.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // Event listener for sending the message on screen tap for mobile devices
+            messageBox.addEventListener('click', sendMessage);
+
+            // Function to send the message
+            function sendMessage() {
+                const message = messageBox.value.slice(0, 50);
+                if (message.length > 0) {
+                    // Handle sending the message (you can modify this part)
+                    console.log('Message sent:', message);
+
+                    // Clear the input box
+                    messageBox.value = '';
+
+                    // Create a new AR object with the sent message
+                    createARObject(message);
+                }
+            }
+
+            // Function to create the AR object
+            function createARObject(message) {
+                const arScene = document.querySelector('a-scene');
+
+                // Create AR object
+                const arObject = document.createElement('a-entity');
+                arObject.setAttribute('geometry', 'primitive: box; width: 2; height: 1; depth: 0.1');
+                arObject.setAttribute('material', 'color: gray; opacity: 0.8');
+                arObject.setAttribute('position', '0 0 -5');
+                arObject.setAttribute('animation', 'property: position; dir: alternate; dur: 2000; easing: linear; to: 1 1 -10; loop: true');
+                arScene.appendChild(arObject);
+
+                // Add text to AR object
+                const arText = document.createElement('a-text');
+                arText.setAttribute('value', message);
+                arText.setAttribute('align', 'center');
+                arText.setAttribute('position', '0 0 0.06');
+                arText.setAttribute('color', 'white');
+                arObject.appendChild(arText);
+            }
+        });
+    </script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        #messageBox {
+            width: 80%;
+            max-width: 300px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <a-scene
+        vr-mode-ui="enabled: false"
+        embedded
+        arjs='sourceType: webcam; videoTexture: true;  debugUIEnabled: false;'>
+
+        <!-- Message box -->
+        <input
+            id="messageBox"
+            type="text"
+            placeholder="Type your message"
+            scale="0.7 0.7 0.7"
+            wrap-count="30">
+
+        <a-camera gps-camera rotation-reader></a-camera>
+    </a-scene>
+</body>
+</html>
